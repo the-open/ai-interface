@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { auth, signOut } from "@/app/(auth)/auth";
+import { auth, signOut } from "@/app/[locale]/(auth)/auth";
 
 import { History } from "./history";
 import { ThemeToggle } from "./theme-toggle";
@@ -11,20 +11,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {getTranslations} from 'next-intl/server';
 
 export const Navbar = async () => {
   let session = await auth();
+  const t = await getTranslations('meta');
+  console.log(t)
 
   return (
     <>
       <div className="bg-background absolute top-0 left-0 w-dvw py-2 px-3 justify-between flex flex-row items-center z-30">
         <div className="flex flex-row gap-3 items-center">
-          {session ? (
-            <History user={session?.user} />
-            ) : null 
-          }
+          <History user={session?.user} />
           <div className="flex flex-row gap-2 items-center">
-            <div className="text-sm dark:text-zinc-300 font-semibold">Campaigns Assistant</div>
+            <div className="text-sm dark:text-zinc-300">
+              <Link href="/">
+                Campaigns Assistant
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -63,7 +67,28 @@ export const Navbar = async () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        ) : null }
+        ) : (
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="py-1.5 px-2 h-fit font-normal"
+                  variant="secondary"
+                >
+                  Language
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>
+                  Blerg
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button className="py-1.5 px-2 h-fit font-normal" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );
